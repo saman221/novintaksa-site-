@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>فروشگاه | نوین تکسا</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* استایل محصول */
+    .product-card {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
+      text-align: center;
+      transition: transform 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+    }
+    .add-to-cart, .order-btn {
+      background-color: #004aad;
+      border: none;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    .add-to-cart:disabled, .order-btn:disabled {
+      background-color: #888;
+      cursor: default;
+    }
+    .add-to-cart:hover:not(:disabled), .order-btn:hover:not(:disabled) {
+      background-color: #002f6c;
+    }
+
+    /* لیست محصولات */
+    .products-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    /* سبد خرید */
+    .cart {
+      margin-top: 3rem;
+      background: #f9f9f9;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: right;
+    }
+    #cart-items {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+      text-align: right;
+    }
+    #cart-items li {
+      background: white;
+      margin-bottom: 0.6rem;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 500;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.05);
+    }
+    #cart-items button {
+      background: #e74c3c;
+      border: none;
+      color: white;
+      padding: 0.3rem 0.7rem;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.3s;
+    }
+    #cart-items button:hover {
+      background: #c0392b;
+    }
+    #clear-cart {
+      background-color: #004aad;
+      border: none;
+      color: white;
+      padding: 0.7rem 1.5rem;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+      margin-top: 1rem;
+      display: block;
+      width: 100%;
+    }
+    #clear-cart:hover {
+      background-color: #002f6c;
+    }
+
+    /* مودال فرم سفارش */
+    #order-modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      overflow: auto;
+      padding-top: 60px;
+    }
+    #order-modal .modal-content {
+      background: #fff;
+      margin: auto;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      position: relative;
+      box-shadow: 0 8px 30px rgb(0 0 0 / 0.15);
+      font-family: Vazir, sans-serif;
+      direction: rtl;
+      text-align: right;
+    }
+    #close-modal {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      cursor: pointer;
+      font-size: 24px;
+      font-weight: bold;
+      color: #444;
+      user-select: none;
+    }
+    #order-modal h2 {
+      color: #004aad;
+      margin-bottom: 1rem;
+    }
+    #order-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    #order-form label {
+      font-weight: 600;
+      color: #004aad;
+    }
+    #order-form input,
+    #order-form textarea {
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      resize: vertical;
+    }
+    #order-form input:focus,
+    #order-form textarea:focus {
+      outline: none;
+      border-color: #004aad;
+      box-shadow: 0 0 6px #004aad88;
+    }
+    #order-form button {
+      background: #004aad;
+      color: white;
+      padding: 0.8rem 2rem;
+      border: none;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    #order-form button:hover {
+      background: #002f6c;
+    }
+    #order-success {
+      color: green;
+      display: none;
+      margin-top: 10px;
+      text-align: center;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">نوین تکسا</div>
+    <nav>
+      <a href="index.html">خانه</a>
+      <a href="services.html">خدمات</a>
+      <a href="shop.html" class="active">فروشگاه</a>
+      <a href="portfolio.html">نمونه کارها</a>
+      <a href="contact.html">تماس با ما</a>
+    </nav>
+  </header>
+
+  <main class="shop-page">
+    <h1>فروشگاه محصولات دیجیتال</h1>
+    <p class="intro">محصولات با کیفیت و خدمات دیجیتال را از اینجا تهیه کنید.</p>
+
+    <section class="products-list">
+      <!-- نمونه محصول -->
+      <div class="product-card">
+        <img src="https://via.placeholder.com/250x150?text=محصول+1" alt="محصول 1" />
+        <h2>پکیج مدیریت شبکه‌های اجتماعی</h2>
+        <p class="price" data-price="2500000">۲,۵۰۰,۰۰۰ تومان</p>
+        <button class="add-to-cart">افزودن به سبد خرید</button>
+        <button class="order-btn" data-product="پکیج مدیریت شبکه‌های اجتماعی">سفارش بده</button>
+      </div>
+
+      <div class="product-card">
+        <img src="https://via.placeholder.com/250x150?text=محصول+2" alt="محصول 2" />
+        <h2>فیلم‌برداری تبلیغاتی حرفه‌ای</h2>
+        <p class="price" data-price="4000000">۴,۰۰۰,۰۰۰ تومان</p>
+        <button class="add-to-cart">افزودن به سبد خرید</button>
+        <button class="order-btn" data-product="فیلم‌برداری تبلیغاتی حرفه‌ای">سفارش بده</button>
+      </div>
+
+      <div class="product-card">
+        <img src="https://via.placeholder.com/250x150?text=محصول+3" alt="محصول 3" />
+        <h2>تبلیغات هدفمند گوگل</h2>
+        <p class="price" data-price="3000000">۳,۰۰۰,۰۰۰ تومان</p>
+        <button class="add-to-cart">افزودن به سبد خرید</button>
+        <button class="order-btn" data-product="تبلیغات هدفمند گوگل">سفارش بده</button>
+      </div>
+
+      <div class="product-card">
+        <img src="https://via.placeholder.com/250x150?text=محصول+4" alt="محصول 4" />
+        <h2>تولید محتوای گرافیکی و ویدئویی</h2>
+        <p class="price" data-price="2200000">۲,۲۰۰,۰۰۰ تومان</p>
+        <button class="add-to-cart">افزودن به سبد خرید</button>
+        <button class="order-btn" data-product="تولید محتوای گرافیکی و ویدئویی">سفارش بده</button>
+      </div>
+    </section>
+
+    <section class="cart">
+      <h2>سبد خرید شما</h2>
+      <ul id="cart-items"></ul>
+      <p id="total-price">مجموع: ۰ تومان</p>
+      <button id="clear-cart">پاک کردن سبد خرید</button>
+    </section>
+  </main>
+
+  <!-- مودال فرم سفارش -->
+  <div id="order-modal" class="modal">
+    <div class="modal-content">
+      <span id="close-modal">×</span>
+      <h2>فرم سفارش</h2>
+      <form id="order-form" action="https://formspree.io/f/xovlpoee" method="POST">
+        <label for="order-name">نام و نام خانوادگی</label>
+        <input type="text" id="order-name" name="name" required placeholder="نام شما" />
+
+        <label for="order-phone">شماره تلفن</label>
+        <input type="tel" id="order-phone" name="phone" required placeholder="مثلاً 09123456789" pattern="[0-9]{10,11}" />
+
+        <label for="order-product">محصول</label>
+        <input type="text" id="order-product" name="product" readonly />
+
+        <label for="order-message">توضیحات</label>
+        <textarea id="order-message" name="message" placeholder="هر توضیحی که دوست داری"></textarea>
+
+        <button type="submit">ارسال سفارش</button>
+      </form>
+      <p id="order-success">سفارش شما با موفقیت ارسال شد!</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 نوین تکسا | همه حقوق محفوظ است.</p>
+    <p>
+      <a href="https://instagram.com">اینستاگرام</a> |
+      <a href="https://telegram.org">تلگرام</a> |
+      <a href="https://linkedin.com">لینکدین</a>
+    </p>
+  </footer>
+
+  <script>
+    // سبد خرید
+    const cart = [];
+    const cartItemsEl = document.getElementById('cart-items');
+    const totalPriceEl = document.getElementById('total-price');
+    const clearCartBtn = document.getElementById('clear-cart');
+
+    function formatPrice(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " تومان";
+    }
+
+    function saveCart() {
+      localStorage.setItem('novintaksa_cart', JSON.stringify(cart));
+    }
+
+    function loadCart() {
+      const saved = localStorage.getItem('novintaksa_cart');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        cart.push(...parsed);
+      }
+    }
+
+    function updateCart() {
+      cartItemsEl.innerHTML = '';
+      let total = 0;
+      cart.forEach((item, index) => {
+        total += item.price;
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - ${formatPrice(item.price)}`;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = 'حذف';
+        removeBtn.style.marginLeft = '10px';
+        removeBtn.onclick = () => {
+          cart.splice(index, 1);
+          saveCart();
+          updateCart();
+        };
+        li.appendChild(removeBtn);
+        cartItemsEl.appendChild(li);
+      });
+      totalPriceEl.textContent = 'مجموع: ' + formatPrice(total);
+      saveCart();
+    }
+
+    document.querySelectorAll('.add-to-cart').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const productCard = btn.parentElement;
+        const name = productCard.querySelector('h2').textContent;
+        const priceNum = Number(productCard.querySelector('.price').getAttribute('data-price'));
+        
+        cart.push({ name, price: priceNum });
+        updateCart();
+
+        btn.disabled = true;
+        btn.textContent = 'اضافه شد';
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.textContent = 'افزودن به سبد خرید';
+        }, 2000);
+      });
+    });
+
+    clearCartBtn.addEventListener('click', () => {
+      cart.length = 0;
+      saveCart();
+      updateCart();
+    });
+
+    loadCart();
+    updateCart();
+
+    // فرم سفارش مودال
+    const orderModal = document.getElementById('order-modal');
+    const closeModalBtn = document.getElementById('close-modal');
+    const orderProductInput = document.getElementById('order-product');
+    const orderForm = document.getElementById('order-form');
+    const orderSuccessMsg = document.getElementById('order-success');
+
+    document.querySelectorAll('.order-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const productName = btn.getAttribute('data-product');
+        orderProductInput.value = productName;
+        orderSuccessMsg.style.display = 'none';
+        orderForm.style.display = 'flex';
+        orderModal.style.display = 'block';
+      });
+    });
+
+    closeModalBtn.onclick = () => {
+      orderModal.style.display = 'none';
+    };
+
+    orderForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const formData = new FormData(orderForm);
+      fetch(orderForm.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      }).then(response => {
+        if (response.ok) {
+          orderForm.reset();
+          orderForm.style.display = 'none';
+          orderSuccessMsg.style.display = 'block';
+          setTimeout(() => {
+            orderModal.style.display = 'none';
+          }, 3000);
+        } else {
+          alert('خطا در ارسال فرم، لطفا دوباره تلاش کنید.');
+        }
+      }).catch(() => {
+        alert('خطا در ارسال فرم، لطفا اتصال اینترنت خود را بررسی کنید.');
+      });
+    });
+
+    window.onclick = e => {
+      if (e.target === orderModal) {
+        orderModal.style.display = 'none';
+      }
+    };
+  </script>
+</body>
+</html>

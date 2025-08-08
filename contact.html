@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>تماس با ما | نوین تکسا</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">نوین تکسا</div>
+    <nav>
+      <a href="index.html">خانه</a>
+      <a href="services.html">خدمات</a>
+      <a href="shop.html">فروشگاه</a>
+      <a href="portfolio.html">نمونه کارها</a>
+      <a href="contact.html" class="active">تماس با ما</a>
+    </nav>
+  </header>
+
+  <main class="contact-page">
+    <h1>تماس با نوین تکسا</h1>
+    <p class="intro">هر سوال، پیشنهاد یا همکاری داری، همینجا به ما پیام بده.</p>
+
+    <section class="contact-form-section">
+      <form id="contact-form" action="https://formspree.io/f/mrblowpa" method="POST">
+        <label for="name">نام و نام خانوادگی</label>
+        <input type="text" id="name" name="name" placeholder="نام شما" required />
+
+        <label for="email">ایمیل</label>
+        <input type="email" id="email" name="_replyto" placeholder="example@email.com" required />
+
+        <label for="subject">موضوع</label>
+        <input type="text" id="subject" name="subject" placeholder="موضوع پیام" required />
+
+        <label for="message">پیام شما</label>
+        <textarea id="message" name="message" rows="5" placeholder="متن پیام" required></textarea>
+
+        <button type="submit">ارسال پیام</button>
+      </form>
+    </section>
+
+    <section class="contact-info">
+      <h2>اطلاعات تماس</h2>
+      <p>تلفن: ۰۲۱-۱۲۳۴۵۶۷۸</p>
+      <p>ایمیل: info@novintaksa.com</p>
+      <p>آدرس: تهران، خیابان مثال، پلاک ۱۲۳</p>
+    </section>
+
+    <div class="back-home">
+      <a href="index.html">بازگشت به صفحه اصلی</a>
+    </div>
+  </main>
+
+  <footer>
+    <p>© 2025 نوین تکسا | همه حقوق محفوظ است.</p>
+    <p>
+      <a href="https://instagram.com">اینستاگرام</a> |
+      <a href="https://telegram.org">تلگرام</a> |
+      <a href="https://linkedin.com">لینکدین</a>
+    </p>
+  </footer>
+</body>
+</html>
